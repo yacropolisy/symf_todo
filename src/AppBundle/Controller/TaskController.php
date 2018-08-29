@@ -48,7 +48,7 @@ class TaskController extends Controller
             $em->persist($task);
             $em->flush();
 
-            return $this->redirectToRoute('task_show', array('id' => $task->getId()));
+            return $this->redirectToRoute('task_index', array('id' => $task->getId()));
         }
 
         return $this->render('task/new.html.twig', array(
@@ -57,21 +57,6 @@ class TaskController extends Controller
         ));
     }
 
-    /**
-     * Finds and displays a task entity.
-     *
-     * @Route("/{id}", name="task_show")
-     * @Method("GET")
-     */
-    public function showAction(Task $task)
-    {
-        $deleteForm = $this->createDeleteForm($task);
-
-        return $this->render('task/show.html.twig', array(
-            'task' => $task,
-            'delete_form' => $deleteForm->createView(),
-        ));
-    }
 
     /**
      * Displays a form to edit an existing task entity.
@@ -81,20 +66,19 @@ class TaskController extends Controller
      */
     public function editAction(Request $request, Task $task)
     {
-        $deleteForm = $this->createDeleteForm($task);
+
         $editForm = $this->createForm('AppBundle\Form\TaskType', $task);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('task_edit', array('id' => $task->getId()));
+            return $this->redirectToRoute('task_index', array('id' => $task->getId()));
         }
 
         return $this->render('task/edit.html.twig', array(
             'task' => $task,
             'edit_form' => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
         ));
     }
 
@@ -106,10 +90,8 @@ class TaskController extends Controller
      */
     public function deleteAction(Request $request, Task $task)
     {
-        $form = $this->createDeleteForm($task);
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($this->isCsrfTokenValid('delete_task', $request->get('_token'))) {
             $em = $this->getDoctrine()->getManager();
             $em->remove($task);
             $em->flush();
@@ -118,19 +100,4 @@ class TaskController extends Controller
         return $this->redirectToRoute('task_index');
     }
 
-    /**
-     * Creates a form to delete a task entity.
-     *
-     * @param Task $task The task entity
-     *
-     * @return \Symfony\Component\Form\Form The form
-     */
-    private function createDeleteForm(Task $task)
-    {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('task_delete', array('id' => $task->getId())))
-            ->setMethod('DELETE')
-            ->getForm()
-        ;
-    }
 }
