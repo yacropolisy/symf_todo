@@ -33,6 +33,8 @@ framework:
 
 # Twig Configuration
 twig:
+    form_themes:
+        - 'bootstrap_3_horizontal_layout.html.twig'
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
 
@@ -70,3 +72,14 @@ swiftmailer:
 sensio_framework_extra:
    router:
         annotations: false
+        
+# FOSUserBundle
+fos_user:
+    db_driver: orm
+    firewall_name: main
+    user_class: AppBundle\Entity\User
+    service:                               
+        mailer: fos_user.mailer.twig_swift 
+    from_email:
+        address: test@example.com
+        sender_name: test
