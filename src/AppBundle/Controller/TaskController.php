@@ -6,6 +6,7 @@ use AppBundle\Entity\Task;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Task controller.
@@ -67,6 +68,9 @@ class TaskController extends Controller
      */
     public function editAction(Request $request, Task $task)
     {
+        if ($this->getUser() !== $task->getOwner()) {
+            throw new AccessDeniedHttpException();
+        }
 
         $editForm = $this->createForm('AppBundle\Form\TaskType', $task);
         $editForm->handleRequest($request);
