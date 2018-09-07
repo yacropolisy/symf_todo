@@ -83,3 +83,12 @@ fos_user:
     from_email:
         address: test@example.com
         sender_name: test
+
+# services
+services:
+    app.post_voter:
+        class: AppBundle\Security\TaskVoter
+        tags:
+            - { name: security.voter }
+        # small performance boost
+        public: false

@@ -68,9 +68,7 @@ class TaskController extends Controller
      */
     public function editAction(Request $request, Task $task)
     {
-        if ($this->getUser() !== $task->getOwner()) {
-            throw new AccessDeniedHttpException();
-        }
+        $this->denyAccessUnlessGranted('edit', $task);
 
         $editForm = $this->createForm('AppBundle\Form\TaskType', $task);
         $editForm->handleRequest($request);
@@ -95,6 +93,8 @@ class TaskController extends Controller
      */
     public function deleteAction(Request $request, Task $task)
     {
+        
+        $this->denyAccessUnlessGranted('delete', $task);
 
         if ($this->isCsrfTokenValid('delete_task', $request->get('_token'))) {
             $em = $this->getDoctrine()->getManager();
